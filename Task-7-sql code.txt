@@ -1,0 +1,40 @@
+# Import necessary modules
+import sqlite3
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Connect to SQLite database
+conn = sqlite3.connect("sales_data.db")
+
+# Run SQL query to pull product-wise total quantity and revenue
+query = """
+SELECT 
+    product, 
+    SUM(quantity) AS total_qty, 
+    SUM(quantity * price) AS revenue
+FROM 
+    sales 
+GROUP BY 
+    product
+"""
+
+# Load the results of the query into a pandas DataFrame
+df = pd.read_sql_query(query, conn)
+
+# Print the results
+print("Sales Info:")
+print(df)
+
+# Plot a bar chart for revenue by product
+df.plot(kind='bar', x='product', y='revenue', title='Revenue by Product', color='skyblue')
+plt.ylabel("Revenue")
+plt.xlabel("Product")
+
+# Save the chart as an image file
+plt.savefig("sales_chart.png")
+
+# Display the chart
+plt.show()
+
+# Close the database connection
+conn.close()
